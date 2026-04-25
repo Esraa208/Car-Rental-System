@@ -1,59 +1,87 @@
-# CarRentalFrontend
+# RentDrive - Premium Car Rental Management System
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.0.
+RentDrive is a state-of-the-art, fully responsive Car Rental Management System built with **Angular 18**. It features a modern, high-end UI/UX inspired by premium SaaS platforms like Linear and Stripe, offering a seamless experience for both administrators and customers.
 
-## Development server
+## ✨ Key Features
 
-To start a local development server, run:
+### 👤 Customer Portal
+
+- **Premium Car Browser**: Advanced filtering by brand, price range, and search.
+- **Dynamic Booking System**: Interactive booking flow with real-time price calculation.
+- **Order Management**: Track your current and past rentals.
+- **Installment Tracking**: Detailed view of payment plans and remaining balances.
+- **Ultra-Responsive UI**: Optimized for mobile, tablet, and desktop viewports.
+
+### 🔐 Admin Dashboard
+
+- **Comprehensive User Management**: Full control over customer accounts.
+- **Fleet Management**: CRUD operations for cars with detailed specifications.
+- **Order Oversight**: Manage and update rental statuses (Pending, Success, Failed).
+- **Premium Analytics**: Visual indicators and summaries for system health.
+
+## 🛠️ Technology Stack
+
+- **Core**: Angular 18 (Standalone Components, Signals, RxJS)
+- **Styling**: Vanilla SCSS (Custom Design System, CSS Variables)
+- **State Management**: Angular Signals for reactive UI
+- **Internationalization**: Custom i18n support (English & Arabic RTL)
+- **Icons**: SVG-based system (Lucide/Heroicons inspired)
+- **Animations**: CSS3 Keyframes & Transitions for smooth micro-interactions
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18.x or higher)
+- [Angular CLI](https://angular.io/cli) (v18.x)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/car-rental-frontend.git
+   ```
+2. Navigate to the project folder:
+   ```bash
+   cd car-rental-frontend
+   ```
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+### Running Locally
+
+Run the development server:
 
 ```bash
-ng serve
+npm start
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-## Code scaffolding
+## 📁 Project Structure
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```text
+src/
+├── app/
+│   ├── core/           # Services, Interceptors, Guards
+│   ├── shared/         # Common Components, Pipes, UI Library
+│   └── features/       # Feature Modules
+│       ├── admin/      # Admin Dashboard & Management
+│       ├── customer/   # Customer Browsing & Booking
+│       └── auth/       # Login & Registration
+├── assets/             # Static images, Icons, Fonts
+└── styles.scss         # Global Design System & Design Tokens
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🎨 Design Philosophy
 
-```bash
-ng generate --help
-```
+RentDrive follows a **"Modern SaaS"** aesthetic:
 
-## Building
+- **Depth through layering**: Cards float above backgrounds with subtle shadows.
+- **Micro-interactions**: Every interactive element has tactile feedback.
+- **Typographic hierarchy**: Uses 'Inter' for UI and 'Cairo' for Arabic RTL support.
+- **Dark Mode Support**: Fully integrated dark theme with balanced contrast.
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
