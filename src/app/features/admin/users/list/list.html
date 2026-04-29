@@ -1,0 +1,60 @@
+<app-data-table
+  [columns]="columns"
+  [rows]="users()"
+  [loading]="loading()"
+  [meta]="meta()"
+  [hasActions]="false"
+  (queryChanged)="onQuery($event)"
+  (rowClicked)="onView($event)"
+>
+  <ng-container toolbar>
+    <div class="table-filters flex gap-3">
+      <input class="form-control w-180" [placeholder]="'auth.country' | translate" [ngModel]="countryFilter()" (ngModelChange)="onCountryFilter($event)" />
+      <select class="form-select w-180" [ngModel]="roleFilter()" (ngModelChange)="onRoleFilter($event)">
+        <option value="">{{ 'users.role' | translate }}: {{ 'common.All' | translate }}</option>
+        <option value="admin">{{ 'users.admin' | translate }}</option>
+        <option value="customer">{{ 'users.customer' | translate }}</option>
+      </select>
+    </div>
+  </ng-container>
+</app-data-table>
+
+<app-modal [open]="!!selectedUser()" [title]="'users.userDetails' | translate" (closed)="selectedUser.set(null)">
+  @if (selectedUser()) {
+    @if (loadingDetails()) {
+      <div class="flex justify-center p-6">
+        <app-spinner />
+      </div>
+    } @else {
+
+      <div class="p-5">
+        <div class="detail-grid">
+          <div class="detail-item">
+            <span class="detail-label">{{ 'auth.email' | translate }}</span>
+            <span class="detail-value">{{ selectedUser()!.email }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">{{ 'auth.phone' | translate }}</span>
+            <span class="detail-value">{{ selectedUser()!.phone || '—' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">{{ 'auth.country' | translate }}</span>
+            <span class="detail-value">{{ selectedUser()!.country || '—' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">{{ 'users.wallet' | translate }}</span>
+            <span class="detail-value text-success font-black">{{ selectedUser()!.wallet | currency:'SAR ':'symbol':'1.2-2' }}</span>
+          </div>
+          <div class="detail-item full-width">
+            <span class="detail-label">{{ 'users.createdAt' | translate }}</span>
+            <span class="detail-value">{{ selectedUser()!.created_at | date:'medium' }}</span>
+          </div>
+        </div>
+
+        <div class="modal-footer-actions">
+          <button class="btn btn-primary" (click)="selectedUser.set(null)">{{ 'common.close' | translate }}</button>
+        </div>
+      </div>
+    }
+  }
+</app-modal>

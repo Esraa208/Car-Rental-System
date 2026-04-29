@@ -1,0 +1,39 @@
+<div class="installments-page">
+  <div class="page-header">
+    <h1 class="page-title">{{ 'installments.title' | translate }}</h1>
+  </div>
+
+  <app-data-table
+    [columns]="columns"
+    [rows]="installments()"
+    [loading]="loading()"
+    [meta]="meta()"
+    [hasActions]="true"
+    [showSearch]="false"
+    [showToolbar]="false"
+    (queryChanged)="onQuery($event)"
+  >
+    <ng-template #actions let-row>
+      @if (row.status === 'pending') {
+        <button 
+          class="btn btn-primary btn-sm btn-pay" 
+          [disabled]="payingId() === row.id" 
+          (click)="pay(row)"
+        >
+          @if (payingId() === row.id) {
+            <span class="spinner spinner-sm spinner-white"></span>
+          } @else {
+            {{ 'installments.pay' | translate }}
+          }
+        </button>
+      } @else {
+        <span class="badge badge-success">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="12" height="12">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          {{ 'orders.success' | translate }}
+        </span>
+      }
+    </ng-template>
+  </app-data-table>
+</div>

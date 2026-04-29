@@ -1,0 +1,109 @@
+$force-sync: 2;
+$system-radius: 12px;
+
+/* Component Styles */
+.flex-grow-1 { flex: 1; }
+.flex-grow-2 { flex: 2; }
+.flex-grow-3 { flex: 3; }
+.min-w-130 { min-width: 130px; }
+.min-w-200 { min-width: 200px; }
+.max-w-400 { max-width: 400px; }
+.flex-0 { flex: 0; }
+
+.car-details-card {
+  padding: 1.25rem;
+  margin-top: 1rem;
+  border-radius: $system-radius;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+.car-details-title {
+  font-size: 0.6875rem; font-weight: 800; color: var(--text-primary);
+  text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;
+}
+
+.booking-card {
+  padding: 1.5rem;
+  margin-top: 1rem;
+  border-radius: $system-radius;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+}
+
+.booking-title {
+  font-size: 0.6875rem; font-weight: 800; color: var(--text-primary);
+  text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;
+}
+
+.payment-toggle {
+  margin-bottom: 0;
+  background: var(--bg-hover);
+  border: 1px solid var(--border);
+  padding: 0.25rem;
+  border-radius: $system-radius;
+}
+
+.summary-box {
+  background: var(--bg-hover);
+  padding: 1.25rem;
+  border-radius: $system-radius;
+  border: 1px solid var(--border);
+  margin-top: 0.5rem;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+.summary-val {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.total-label {
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.total-amount {
+  color: var(--primary);
+  font-weight: 900;
+  font-size: 1.5rem;
+}
+
+.total-currency {
+  font-size: 0.75rem;
+}
+
+.btn-container {
+  margin-top: 0.5rem;
+}
+
+.btn-submit {
+  width: 100%;
+  border-radius: $system-radius;
+  padding-block: 0.875rem;
+  font-weight: 700;
+}
+
+.btn-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+}

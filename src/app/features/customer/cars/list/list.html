@@ -1,0 +1,208 @@
+<!-- Premium Car Browser v2 -->
+<div class="cars-page">
+  <div class="page-header">
+    <h1 class="page-title">{{ 'cars.browse' | translate }}</h1>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="table-filters flex flex-wrap items-center justify-between gap-4 mb-6">
+    <!-- Search Bar -->
+    <div class="search-box flex-1 min-w-200 max-w-400">
+      <input
+        class="form-control"
+        type="text"
+        [placeholder]="'table.search' | translate"
+        [ngModel]="search()"
+        (ngModelChange)="onSearch($event)"
+      />
+    </div>
+
+    <!-- Filters Group -->
+    <div class="filters-group flex items-center gap-3">
+      <input
+        class="form-control w-150"
+        type="text"
+        [placeholder]="'cars.brand' | translate"
+        [ngModel]="brand()"
+        (ngModelChange)="onBrand($event)"
+      />
+      <div class="flex items-center gap-2">
+        <input
+          class="form-control w-100"
+          type="number"
+          [placeholder]="'cars.minPrice' | translate"
+          [ngModel]="minPrice()"
+          (ngModelChange)="onMinPrice($event)"
+        />
+        <span class="text-muted">—</span>
+        <input
+          class="form-control w-100"
+          type="number"
+          [placeholder]="'cars.maxPrice' | translate"
+          [ngModel]="maxPrice()"
+          (ngModelChange)="onMaxPrice($event)"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  @if (loading()) {
+    <app-spinner />
+  } @else if (cars().length === 0) {
+    <app-empty-state />
+  } @else {
+    <div class="car-grid">
+      @for (car of cars(); track car.id) {
+        <app-car-card [car]="car" (view)="viewCar($event)" />
+      }
+    </div>
+
+    <!-- Pagination -->
+    <div class="table-container mt-4">
+      <div class="table-footer">
+        <div class="table-info">
+          {{ meta().from }}–{{ meta().to }} / {{ meta().total }}
+        </div>
+      <div class="pagination">
+        <select class="form-select pagination-select flex-0" [ngModel]="meta().per_page" (ngModelChange)="onPerPageChange($event)">
+          <option [value]="10">10</option>
+          <option [value]="15">15</option>
+          <option [value]="25">25</option>
+          <option [value]="50">50</option>
+        </select>
+        
+        <button class="page-btn" [disabled]="meta().current_page <= 1" (click)="onPageChange(meta().current_page - 1)">
+          <span class="icon">‹</span>
+          <span class="text">{{ 'table.prev' | translate }}</span>
+        </button>
+        <div class="page-numbers">
+          @for (p of pageNumbers(); track p) {
+            <button class="page-btn-num" [class.active]="p === meta().current_page" (click)="onPageChange(p)">{{ p }}</button>
+          }
+        </div>
+        <button class="page-btn" [disabled]="meta().current_page >= meta().last_page" (click)="onPageChange(meta().current_page + 1)">
+          <span class="text">{{ 'table.next' | translate }}</span>
+          <span class="icon">›</span>
+        </button>
+      </div>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Portrait Premium Modal -->
+<app-modal 
+  [open]="isModalOpen()" 
+  [title]="(selectedCar()?.brand || '') + ' ' + (selectedCar()?.name || '')" 
+  (closed)="closeModal()"
+>
+  @if (isLoadingDetails()) {
+    <div class="p-6 flex justify-center flex-col items-center gap-4">
+      <app-spinner />
+      <span class="text-secondary">{{ 'common.loading' | translate }}</span>
+    </div>
+  } @else if (selectedCar()) {
+    <div class="order-detail-container relative">
+      
+      <!-- Ultimate Hero Header -->
+
+      <div class="flex flex-col gap-5">
+        <!-- Details Section -->
+        <div class="info-section">
+          <h4 class="section-title pb-5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            {{ 'cars.details' | translate }}
+          </h4>
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="item-label">{{ 'cars.brand' | translate }}</span>
+              <span class="item-value">{{ selectedCar()?.brand }}</span>
+            </div>
+            <div class="info-item">
+              <span class="item-label">{{ 'cars.name' | translate }}</span>
+              <span class="item-value">{{ selectedCar()?.name }}</span>
+            </div>
+            <div class="info-item">
+              <span class="item-label">{{ 'cars.year' | translate }}</span>
+              <span class="item-value">{{ selectedCar()?.model }}</span>
+            </div>
+            <div class="info-item">
+              <span class="item-label">{{ 'cars.kilometers' | translate }}</span>
+              <span class="item-value text-primary">{{ selectedCar()?.kilometers | number }} {{ 'common.km' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Booking Form Section -->
+        <div class="info-section">
+          <h3 class="section-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path></svg>
+            {{ 'orders.bookCar' | translate }}
+          </h3>
+          
+          <form [formGroup]="bookingForm" (ngSubmit)="submitBooking()" class="form-group mt-2">
+            <div class="form-group">
+              <label class="font-semibold">{{ 'orders.deliveryDate' | translate }}</label>
+              <input type="date" formControlName="delivery_date" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label class="font-semibold">{{ 'orders.receivingDate' | translate }}</label>
+              <input type="date" formControlName="receiving_date" class="form-control" />
+            </div>
+
+            <div class="form-group">
+              <label class="font-semibold">{{ 'orders.paymentType' | translate }}</label>
+              <select class="form-select" formControlName="payment_type">
+                <option value="cash">{{ 'orders.cash' | translate }}</option>
+                <option value="visa">{{ 'orders.visa' | translate }}</option>
+                <option value="tamara">{{ 'orders.tamara' | translate }}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="font-semibold">{{ 'orders.orderType' | translate }}</label>
+              <select class="form-select" formControlName="order_type">
+                <option value="full">{{ 'orders.full' | translate }}</option>
+                <option value="installments">{{ 'orders.installments' | translate }}</option>
+              </select>
+            </div>
+
+            <!-- Total Summary -->
+            @if (calculatedDays() > 0) {
+              <div class="full-width summary-box">
+                <div class="summary-row">
+                  <span>{{ 'orders.days' | translate }}</span>
+                  <span class="summary-val">{{ calculatedDays() }}</span>
+                </div>
+                <div class="summary-total">
+                  <span class="total-label">{{ 'orders.totalPrice' | translate }}</span>
+                  <div class="total-amount">
+                    {{ totalPrice() | number:'1.0-0' }} <span class="total-currency">{{ 'common.sar' | translate }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+
+            @if (bookingError()) {
+              <div class="alert alert-danger full-width">{{ bookingError() }}</div>
+            }
+
+            <div class="modal-footer-actions">
+              <button type="submit" class="btn btn-primary btn-submit" [disabled]="booking() || bookingForm.invalid || calculatedDays() <= 0">
+                @if (booking()) { 
+                   <span class="spinner spinner-sm spinner-white"></span>
+                } @else { 
+                  <span class="btn-content">
+                    {{ 'orders.createOrder' | translate }}
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </span>
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+</app-modal>

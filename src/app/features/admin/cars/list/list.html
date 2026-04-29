@@ -1,0 +1,138 @@
+<div class="page-header justify-end">
+  <button class="btn btn-primary" (click)="openAddModal()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="icon-svg-md"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    {{ 'cars.new' | translate }}
+  </button>
+</div>
+
+<app-data-table
+  [columns]="columns"
+  [rows]="cars()"
+  [loading]="loading()"
+  [meta]="meta()"
+  [hasActions]="true"
+  (queryChanged)="onQuery($event)"
+  (rowClicked)="onView($event)"
+>
+  <ng-container toolbar>
+    <div class="table-filters flex gap-3 flex-wrap w-full">
+      <input class="form-control filter-brand" [placeholder]="'cars.brand' | translate" [ngModel]="brandFilter()" (ngModelChange)="onBrandFilter($event)" />
+      <input class="form-control filter-price" type="number" [placeholder]="'cars.minPrice' | translate" [ngModel]="minPriceFilter()" (ngModelChange)="onMinPriceFilter($event)" />
+      <input class="form-control filter-price" type="number" [placeholder]="'cars.maxPrice' | translate" [ngModel]="maxPriceFilter()" (ngModelChange)="onMaxPriceFilter($event)" />
+    </div>
+  </ng-container>
+
+  <ng-template #actions let-row="row">
+    <button class="btn btn-secondary btn-sm" (click)="openEditModal(row)">{{ 'common.edit' | translate }}</button>
+    <button class="btn btn-danger btn-sm" (click)="askDelete(row)">{{ 'common.delete' | translate }}</button>
+  </ng-template>
+</app-data-table>
+
+<app-modal [open]="showFormModal()" [title]="isEdit() ? ('cars.edit' | translate) : ('cars.new' | translate)" (closed)="closeFormModal()">
+  @if (loadingDetails() && isEdit()) {
+    <div class="flex justify-center p-6">
+      <app-spinner />
+    </div>
+  } @else {
+    <!-- Ultimate Hero Header -->
+
+    <form [formGroup]="form" (ngSubmit)="submitForm()" class="form-grid p-5">
+      <div class="form-group full-width">
+        <label>{{ 'cars.name' | translate }}</label>
+        <input class="form-control" type="text" formControlName="name" placeholder="e.g. Model S" />
+      </div>
+      <div class="form-group">
+        <label>{{ 'cars.brand' | translate }}</label>
+        <input class="form-control" type="text" formControlName="brand" placeholder="e.g. Tesla" />
+      </div>
+      <div class="form-group">
+        <label>{{ 'cars.model' | translate }}</label>
+        <input class="form-control" type="text" formControlName="model" placeholder="e.g. 2024" />
+      </div>
+      <div class="form-group">
+        <label>{{ 'cars.kilometers' | translate }}</label>
+        <input class="form-control" type="number" formControlName="kilometers" />
+      </div>
+      <div class="form-group">
+        <label>{{ 'cars.pricePerDay' | translate }} ({{ 'common.sar' | translate }})</label>
+        <input class="form-control" type="number" formControlName="price_per_day" />
+      </div>
+
+      @if (error()) {
+        <div class="alert alert-danger full-width">{{ error() }}</div>
+      }
+
+      <div class="modal-footer-actions">
+        <button type="button" class="btn btn-ghost" (click)="closeFormModal()">{{ 'common.cancel' | translate }}</button>
+        <button type="submit" class="btn btn-primary" [disabled]="saving() || form.invalid">
+          @if (saving()) {
+            <span class="spinner spinner-sm spinner-white"></span>
+          } @else {
+            {{ 'common.save' | translate }}
+          }
+        </button>
+      </div>
+    </form>
+  }
+</app-modal>
+
+<!-- Delete Modal -->
+<app-modal [open]="showDeleteModal()" [title]="'cars.delete' | translate" (closed)="showDeleteModal.set(false)">
+  <p class="mb-4">{{ 'cars.deleteConfirm' | translate }}</p>
+  <div class="flex gap-4 justify-end">
+    <button class="btn btn-ghost" (click)="showDeleteModal.set(false)">{{ 'common.cancel' | translate }}</button>
+    <button class="btn btn-danger" (click)="confirmDelete()">
+      @if (deleting()) {
+        <span class="spinner spinner-sm spinner-white"></span>
+      } @else {
+        {{ 'common.delete' | translate }}
+      }
+    </button>
+  </div>
+</app-modal>
+
+<!-- View Modal -->
+<app-modal [open]="!!selectedCar()" [title]="'cars.details' | translate" (closed)="selectedCar.set(null)">
+  @if (selectedCar()) {
+    @if (loadingDetails() && !isEdit()) {
+      <div class="flex justify-center p-6">
+        <app-spinner />
+      </div>
+    } @else {
+
+      <div class="p-5">
+
+      <div class="detail-grid">
+        <div class="detail-item">
+          <span class="detail-label">{{ 'cars.brand' | translate }}</span>
+          <span class="detail-value">{{ selectedCar()!.brand }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">{{ 'cars.name' | translate }}</span>
+          <span class="detail-value">{{ selectedCar()!.name || '—' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">{{ 'cars.model' | translate }}</span>
+          <span class="detail-value">{{ selectedCar()!.model }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">{{ 'cars.kilometers' | translate }}</span>
+          <span class="detail-value">{{ selectedCar()!.kilometers | number }} {{ 'common.km' | translate }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">{{ 'cars.pricePerDay' | translate }}</span>
+          <span class="detail-value text-primary font-black">{{ selectedCar()!.price_per_day | currency:'SAR ':'symbol':'1.0-0' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">{{ 'common.createdAt' | translate }}</span>
+          <span class="detail-value">{{ selectedCar()!.created_at | date:'medium' }}</span>
+        </div>
+      </div>
+
+      <div class="modal-footer-actions">
+        <button class="btn btn-primary" (click)="selectedCar.set(null)">{{ 'common.close' | translate }}</button>
+      </div>
+      </div>
+    }
+  }
+</app-modal>

@@ -1,0 +1,185 @@
+<app-data-table
+  [columns]="columns"
+  [rows]="orders()"
+  [loading]="loading()"
+  [meta]="meta()"
+  [hasActions]="false"
+  (rowClicked)="onView($event)"
+>
+  <ng-container toolbar>
+    <div class="table-filters flex gap-3 flex-wrap w-full">
+      <select class="form-select filter-select" [ngModel]="statusFilter()" (ngModelChange)="onStatusFilter($event)">
+        <option value="">{{ 'orders.allStatuses' | translate }}</option>
+        <option value="pending">{{ 'orders.pending' | translate }}</option>
+        <option value="success">{{ 'orders.success' | translate }}</option>
+        <option value="failed">{{ 'orders.failed' | translate }}</option>
+      </select>
+
+      <select class="form-select filter-select" [ngModel]="typeFilter()" (ngModelChange)="onTypeFilter($event)">
+        <option value="">{{ 'orders.allPaymentTypes' | translate }}</option>
+        <option value="cash">{{ 'orders.cash' | translate }}</option>
+        <option value="visa">{{ 'orders.visa' | translate }}</option>
+        <option value="tamara">{{ 'orders.tamara' | translate }}</option>
+      </select>
+
+      <select class="form-select filter-select" [ngModel]="orderTypeFilter()" (ngModelChange)="onOrderTypeFilter($event)">
+        <option value="">{{ 'orders.allOrderTypes' | translate }}</option>
+        <option value="full">{{ 'orders.full' | translate }}</option>
+        <option value="installments">{{ 'orders.installments' | translate }}</option>
+      </select>
+
+      <input type="text" class="form-control filter-input" [placeholder]="'orders.userIdFilter' | translate" [ngModel]="userIdFilter()" (ngModelChange)="onUserIdFilter($event)">
+      <input type="text" class="form-control filter-input" [placeholder]="'orders.carIdFilter' | translate" [ngModel]="carIdFilter()" (ngModelChange)="onCarIdFilter($event)">
+    </div>
+  </ng-container>
+</app-data-table>
+
+<!-- Order View & Update Modal -->
+<app-modal [open]="!!selectedOrder()" [title]="('orders.orderDetails' | translate) + ' #' + (selectedOrder()?.id || '')" (closed)="onCloseModal()">
+  @if (selectedOrder()) {
+    @if (loadingDetails()) {
+      <div class="flex justify-center items-center detail-loading-box">
+        <app-spinner />
+      </div>
+    } @else {
+      <div class="order-detail-container">
+        
+        <!-- Ultimate Hero -->
+        <div class="modal-hero-section">
+          <div class="hero-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01Z"/>
+              <circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>
+            </svg>
+          </div>
+          <div class="hero-content">
+            <h4 class="hero-title">{{ selectedOrder()?.user?.name || '—' }}</h4>
+            <div class="hero-badges">
+              <span class="badge" [class]="'badge-' + (selectedOrder()?.payment_status || 'pending')">
+                {{ ('orders.' + (selectedOrder()?.payment_status || '')) | translate }}
+              </span>
+              <span class="badge badge-outline">#{{ selectedOrder()?.id }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Clean Grid Layout -->
+        <div class="modal-body-content">
+          
+          <!-- Summary Pill Cards -->
+          <div class="order-summary-row">
+            <div class="summary-card">
+              <span class="label">{{ 'orders.totalPrice' | translate }}</span>
+              <span class="value">{{ selectedOrder()?.total_price | number:'1.0-0' }} <small>{{ 'common.sar' | translate }}</small></span>
+            </div>
+            <div class="summary-card">
+              <span class="label">{{ 'orders.days' | translate }}</span>
+              <span class="value">{{ selectedOrder()?.days }} <small>{{ 'common.day' | translate }}</small></span>
+            </div>
+            <div class="summary-card">
+              <span class="label">{{ 'orders.points' | translate }}</span>
+              <span class="value">{{ selectedOrder()?.points || 0 }} <small>pts</small></span>
+            </div>
+          </div>
+
+          <!-- Detailed Info -->
+          <div class="info-section">
+            <h5 class="section-title">
+               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+               {{ 'orders.details' | translate }}
+            </h5>
+            <div class="info-grid">
+               <div class="info-item">
+                  <span class="item-label">{{ 'orders.car' | translate }}</span>
+                  <span class="item-value">{{ selectedOrder()?.car?.brand }} {{ selectedOrder()?.car?.name }}</span>
+               </div>
+               <div class="info-item">
+                  <span class="item-label">{{ 'users.phone' | translate }}</span>
+                  <span class="item-value">{{ selectedOrder()?.user?.phone || '—' }}</span>
+               </div>
+               <div class="info-item">
+                  <span class="item-label">{{ 'users.country' | translate }}</span>
+                  <span class="item-value">{{ selectedOrder()?.user?.country || '—' }}</span>
+               </div>
+               <div class="info-item">
+                  <span class="item-label">{{ 'orders.orderType' | translate }}</span>
+                  <span class="item-value">{{ ('orders.' + (selectedOrder()?.order_type || '')) | translate }}</span>
+               </div>
+            </div>
+          </div>
+
+          <!-- Timeline -->
+          <div class="timeline-box">
+             <div class="timeline-header">{{ 'orders.rentalTimeline' | translate }}</div>
+             <div class="timeline-row">
+                <div class="time-node">
+                   <span class="time-label">{{ 'orders.deliveryDate' | translate }}</span>
+                   <span class="time-date">{{ selectedOrder()?.delivery_date | date:'mediumDate' }}</span>
+                </div>
+                <div class="time-arrow">
+                  <span class="arrow-text">→</span>
+                  <span class="days-badge">{{ selectedOrder()?.days }} {{ 'common.day' | translate }}</span>
+                </div>
+                <div class="time-node text-right">
+                   <span class="time-label">{{ 'orders.receivingDate' | translate }}</span>
+                   <span class="time-date">{{ selectedOrder()?.receiving_date | date:'mediumDate' }}</span>
+                </div>
+             </div>
+          </div>
+
+          <!-- Installments Section -->
+          @if (selectedOrder()?.order_type === 'installments' && selectedOrder()?.installments?.length) {
+            <div class="info-section">
+              <h5 class="section-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                {{ 'installments.title' | translate }}
+              </h5>
+              <div class="installments-list">
+                @for (inst of selectedOrder()?.installments; track inst.id) {
+                  <div class="inst-item" [class]="inst.status">
+                    <div class="inst-main">
+                       <span class="inst-id">#{{ inst.id }}</span>
+                       <span class="inst-date">{{ inst.due_date | date:'mediumDate' }}</span>
+                    </div>
+                    <div class="inst-details">
+                       <span class="inst-status-label">{{ inst.status | translate }}</span>
+                       <span class="inst-amount">{{ inst.amount | number:'1.0-0' }} {{ 'common.sar' | translate }}</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Management Area (Standardized) -->
+          <div class="info-section">
+             <h5 class="section-title">
+               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+               {{ 'orders.updateStatus' | translate }}
+             </h5>
+             <div class="info-grid">
+                <div class="info-item full-width">
+                   <select class="form-select" [(ngModel)]="newStatus">
+                     <option value="pending">{{ 'orders.pending' | translate }}</option>
+                     <option value="success">{{ 'orders.success' | translate }}</option>
+                     <option value="failed">{{ 'orders.failed' | translate }}</option>
+                   </select>
+                </div>
+             </div>
+          </div>
+        </div>
+
+        <div class="modal-footer-actions">
+          <button type="button" class="btn btn-ghost" (click)="onCloseModal()">{{ 'common.close' | translate }}</button>
+          <button class="btn btn-primary" (click)="updateStatus()" [disabled]="updatingStatus()">
+             @if (updatingStatus()) {
+              <span class="spinner spinner-sm spinner-white"></span>
+            } @else {
+              {{ 'common.save' | translate }}
+            }
+          </button>
+        </div>
+      </div>
+    }
+  }
+</app-modal>

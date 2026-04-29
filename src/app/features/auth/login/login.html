@@ -1,0 +1,65 @@
+<div class="auth-page">
+  <div class="auth-controls">
+    <app-theme-toggle />
+    <app-lang-toggle />
+  </div>
+
+  <div class="auth-card card card--glass">
+    <div class="auth-header">
+      <div class="auth-logo">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5H6.5C5.84 5 5.29 5.42 5.08 6.01L3 12V20C3 20.55 3.45 21 4 21H5C5.55 21 6 20.55 6 20V19H18V20C18 20.55 18.45 21 19 21H20C20.55 21 21 20.55 21 20V12L18.92 6.01ZM6.85 7H17.15L18.22 10.12L18.52 11H5.48L5.78 10.12L6.85 7ZM19 17H5V13H19V17Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <h1>{{ 'app.name' | translate }}</h1>
+      <p>{{ 'app.tagline' | translate }}</p>
+    </div>
+
+    <div class="role-toggle">
+      <button type="button" class="role-btn" [class.active]="role() === 'customer'" (click)="setRole('customer')">
+        {{ 'users.customer' | translate }}
+      </button>
+      <button type="button" class="role-btn" [class.active]="role() === 'admin'" (click)="setRole('admin')">
+        {{ 'users.admin' | translate }}
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-group">
+        <label for="login-email">{{ 'auth.email' | translate }}</label>
+        <input class="form-control" type="email" id="login-email" formControlName="email" placeholder="name@example.com">
+        @if (email.touched && email.invalid) {
+          <span class="form-error">{{ 'errors.email' | translate }}</span>
+        }
+        @if (backendErrors()['email']) {
+          <span class="form-error">{{ backendErrors()['email'][0] }}</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="login-password">{{ 'auth.password' | translate }}</label>
+        <input class="form-control" type="password" id="login-password" formControlName="password" placeholder="••••••••">
+        @if (password.touched && password.invalid) {
+          <span class="form-error">{{ 'errors.required' | translate }}</span>
+        }
+      </div>
+
+      @if (error()) {
+        <div class="alert alert-danger">{{ error() }}</div>
+      }
+
+      <button type="submit" class="btn btn-primary w-full" [disabled]="loading() || form.invalid">
+        @if (loading()) {
+          <span class="spinner spinner-sm spinner-white"></span>
+        } @else {
+          {{ 'auth.signIn' | translate }}
+        }
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>{{ 'auth.noAccount' | translate }} <a routerLink="/register">{{ 'auth.createAccount' | translate }}</a></p>
+    </div>
+  </div>
+
+</div>

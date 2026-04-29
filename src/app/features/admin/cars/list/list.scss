@@ -1,0 +1,22 @@
+.icon-svg-md { width: 1.25rem; height: 1.25rem; }
+.icon-svg-lg { width: 2.5rem; height: 2.5rem; }
+
+.filter-brand {
+  flex: 1;
+  min-width: 120px;
+  max-width: 200px;
+}
+
+.filter-price {
+  flex: 1;
+  min-width: 120px;
+  max-width: 150px;
+}
+
+.car-avatar-bg {
+  background: var(--gradient-secondary);
+}
+
+.text-primary {
+  color: var(--primary) !important;
+}

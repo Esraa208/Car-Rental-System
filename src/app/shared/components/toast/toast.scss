@@ -1,0 +1,48 @@
+ .toast-container {
+      position: fixed; top: 1.5rem; right: 1.5rem; z-index: 9999;
+      display: flex; flex-direction: column; gap: 0.75rem; pointer-events: none;
+      --toast-slide: 2rem;
+    }
+    :host-context([dir="rtl"]) .toast-container { right: auto; left: 1.5rem; --toast-slide: -2rem; }
+
+    .toast {
+      pointer-events: auto; display: flex; align-items: center; gap: 1rem;
+      padding: 1rem 1.25rem; border-radius: var(--radius-lg); background: var(--bg-card);
+      border: 1px solid var(--border); box-shadow: var(--shadow-lg);
+      min-width: 300px; max-width: 450px; cursor: pointer;
+      animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.2s;
+      
+      &:hover { transform: translateY(-2px); }
+      
+      &--success { border-left: 4px solid var(--success); border-right: 0; }
+      &--error   { border-left: 4px solid var(--danger); border-right: 0; }
+      &--warning { border-left: 4px solid var(--warning); border-right: 0; }
+      &--info    { border-left: 4px solid var(--primary); border-right: 0; }
+    }
+
+    :host-context([dir="rtl"]) .toast {
+      &--success { border-right: 4px solid var(--success); border-left: 0; }
+      &--error   { border-right: 4px solid var(--danger); border-left: 0; }
+      &--warning { border-right: 4px solid var(--warning); border-left: 0; }
+      &--info    { border-right: 4px solid var(--primary); border-left: 0; }
+    }
+
+    .toast-icon {
+      width: 2rem; height: 2rem; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      background: var(--bg-hover);
+      svg { width: 1.125rem; height: 1.125rem; }
+    }
+
+    .toast--success .toast-icon { color: var(--success); }
+    .toast--error .toast-icon   { color: var(--danger); }
+    .toast--warning .toast-icon { color: var(--warning); }
+    .toast--info .toast-icon    { color: var(--primary); }
+
+    .toast-message { font-size: 0.875rem; font-weight: 600; color: var(--text-primary); flex: 1; }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(var(--toast-slide)); }
+      to   { opacity: 1; transform: translateX(0); }
+    }

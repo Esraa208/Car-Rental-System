@@ -1,0 +1,10 @@
+.data-table-filters-container:not(:empty) {
+  padding: 0 1.25rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-card);
+}
+
+.pagination-select {
+  width: auto;
+  padding-block: 0.3rem;
+}

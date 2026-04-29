@@ -1,0 +1,112 @@
+<div class="table-container">
+    @if (showToolbar()) {
+      <!-- Toolbar -->
+      <div class="table-toolbar">
+        @if (showSearch()) {
+          <div class="table-search input-group">
+            <input
+              class="form-control"
+              type="text"
+              [placeholder]="'table.search' | translate"
+              [ngModel]="searchValue()"
+              (ngModelChange)="onSearchChange($event)"
+            />
+          </div>
+        }
+        <div class="table-actions">
+          <ng-content select="[toolbar]" />
+        </div>
+      </div>
+    }
+
+      <!-- Filters slot -->
+      <div class="data-table-filters-container">
+        <ng-content select="[filters]" />
+      </div>
+
+      <!-- Loading -->
+      @if (loading()) {
+        <div class="p-6 flex justify-center">
+          <app-spinner />
+        </div>
+      } @else if (rows().length === 0) {
+        <app-empty-state />
+      } @else {
+        <!-- Table -->
+        <div class="table-wrap">
+          <table class="table-striped">
+            <thead>
+              <tr>
+                @for (col of columns(); track col.key) {
+                  <th>{{ col.label | translate }}</th>
+                }
+                @if (hasActions()) {
+                  <th>{{ 'table.actions' | translate }}</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of rows(); track trackByFn(row)) {
+                <tr (click)="rowClicked.emit(row)">
+                  @for (col of columns(); track col.key) {
+                    <td>
+                      @switch (col.type) {
+                        @case ('date') {
+                          {{ row[col.key] | date:'mediumDate' }}
+                        }
+                        @case ('currency') {
+                          <span class="font-semibold text-primary">{{ row[col.key] | number:'1.2-2' }}</span> <span class="text-xs text-muted">{{ 'common.sar' | translate }}</span>
+                        }
+                        @case ('badge') {
+                          <span class="badge" [class]="'badge-' + (col.badgeMap?.[row[col.key]] || row[col.key])">
+                            {{ (col.badgePrefix ? (col.badgePrefix + '.' + row[col.key]) : row[col.key]) | translate }}
+                          </span>
+                        }
+                        @default {
+                          {{ row[col.key] ?? '—' }}
+                        }
+                      }
+                    </td>
+                  }
+                  @if (hasActions()) {
+                    <td class="table-actions" (click)="$event.stopPropagation()">
+                      <ng-container *ngTemplateOutlet="actionsTemplate || defaultActions; context: { $implicit: row, row: row }"></ng-container>
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="table-footer">
+          <div class="table-info">
+            {{ meta().from }}–{{ meta().to }} / {{ meta().total }}
+          </div>
+          <div class="pagination">
+            <select class="form-select pagination-select" [ngModel]="meta().per_page" (ngModelChange)="onPerPageChange($event)">
+              <option [value]="10">10</option>
+              <option [value]="15">15</option>
+              <option [value]="25">25</option>
+              <option [value]="50">50</option>
+            </select>
+            <button class="page-btn" [disabled]="meta().current_page <= 1" (click)="onPageChange(meta().current_page - 1)">
+              <span class="icon">‹</span>
+              <span class="text">{{ 'table.prev' | translate }}</span>
+            </button>
+            
+            <div class="page-numbers">
+              @for (p of pageNumbers(); track p) {
+                <button class="page-btn-num" [class.active]="p === meta().current_page" (click)="onPageChange(p)">{{ p }}</button>
+              }
+            </div>
+
+            <button class="page-btn" [disabled]="meta().current_page >= meta().last_page" (click)="onPageChange(meta().current_page + 1)">
+              <span class="text">{{ 'table.next' | translate }}</span>
+              <span class="icon">›</span>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
